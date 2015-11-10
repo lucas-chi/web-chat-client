@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Go Robot Demo</title>
+<title>Web Chat Demo</title>
 <style type="text/css">
 	#content{
 		width: 600px;
@@ -17,42 +17,31 @@
 		font-family: "微软雅黑";
 		word-wrap: break-word;
 	}
-	#message{
-		width: 600px;
-		padding: 3px;
-		font-size: 12px;
-		font-family: "微软雅黑";
-		box-sizing: border-box;
-	}
-	#api{
-		display: none;
-	}
 	</style>
 </head>
 <body>
-<h3>Go Robot Demo</h3>
+<h3>Web Chat Demo</h3>
+
 <div id="content"></div>
-<input id="close" type="button" value="断开">
-<form id="chat" target="api" method="post" onsubmit="this.source.value=this.outerHTML" action="http://10.113.195.11:8091/1/admin/push/private?key=lucas&expire=60&gid=0">
-	<input id="message" type="text" autocomplete="off" placeholder="想要说什么" />
-</form>
-<iframe id="api" name="api" frameborder="0"></iframe>
+<input id="close" type="button" value="Disconnect"><br>
+<h5>Push</h5>
+<textarea id="message" autocomplete="off" placeholder="想要说什么" rows="4" cols="40"/>
+</textarea><br>
+<input id="pushBtn" type="button" value="Push">
+
 <script src="../js/class.support/class.support.min.js"></script>
 <script src="../js/jquery/jquery.min.js"></script>
 <script src="http://www.google.com/jsapi"></script>
 <script src="http://jquery-json.googlecode.com/files/jquery.json-2.2.min.js"></script>
-<script src="http://jquery-websocket.googlecode.com/files/jquery.websocket-0.0.1.js"></script>
 <script src="../js/comet.js?1000"></script>
 <script src="../js/agent.js?1000"></script>
 <script>
-var comet = new Comet({"agentHost" : "10.113.195.11",
-							"adminPort" : "8091",
-							"apiPort" : "8090",
-							"key" : "lucas",
+var key = "lucas"
+var comet = new Comet({"key" : key,
 							"heartbeat" : 30,
 							mid : 0,
 							onOpen : function() {
-								$("#content").append("初始化完成<br>")
+								$("#content").append("Comet connected!!<br>")
 							},
 							onOfflineMessage: function(data){
 								$("#content").append(JSON.stringify(data.msg) + "<br>");
@@ -64,14 +53,14 @@ var comet = new Comet({"agentHost" : "10.113.195.11",
 								$("#content").append(message + "<br>");
 							},
 							onClose: function(message){
-								$("#content").append('连接断开' + "<br>");
+								$("#content").append('Disconnected!!' + "<br>");
 							}
 							});
-comet.start();
 var agent = new Agent({"agentHost" : "10.113.195.11",
 							"adminPort" : "8091",
 							"apiPort" : "8090",
-							"key" : "lucas",
+							"key" : key,
+							"expire" : 600,
 							onPushSuccess : function() {
 								$("#message").val();
 							},
@@ -80,9 +69,20 @@ var agent = new Agent({"agentHost" : "10.113.195.11",
 							}
 							});
 
+// startup
+agent.getCometNode(key, function(node) {
+	comet.start(node);
+});
+
+// get offline messages
+agent.getOfflineMessage();
+
+// close event
 $("#close").click(function() {
 	comet.destroy();
 });
+
+// push event
 $("#pushBtn").click(function() {
 	agent.push($("#message").val());
 });
