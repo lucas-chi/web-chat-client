@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Go Robot Demo</title>
+<style type="text/css">
+	#content{
+		width: 600px;
+		height: 400px;
+		overflow: auto;
+		font-size: 12px;
+		background: #eee;
+		padding: 5px 10px;
+		margin-bottom: 5px;
+		border: 1px solid #888;
+		box-sizing: border-box;
+		font-family: "微软雅黑";
+		word-wrap: break-word;
+	}
+	#message{
+		width: 600px;
+		padding: 3px;
+		font-size: 12px;
+		font-family: "微软雅黑";
+		box-sizing: border-box;
+	}
+	#api{
+		display: none;
+	}
+	</style>
+</head>
+<body>
+<h3>Go Robot Demo</h3>
+<div id="content"></div>
+<input id="close" type="button" value="断开">
+<form id="chat" target="api" method="post" onsubmit="this.source.value=this.outerHTML" action="http://10.113.195.11:8091/1/admin/push/private?key=lucas&expire=60&gid=0">
+	<input id="message" type="text" autocomplete="off" placeholder="想要说什么" />
+</form>
+<iframe id="api" name="api" frameborder="0"></iframe>
+<script src="../js/class.support/class.support.min.js"></script>
+<script src="../js/jquery/jquery.min.js"></script>
+<script src="http://www.google.com/jsapi"></script>
+<script src="http://jquery-json.googlecode.com/files/jquery.json-2.2.min.js"></script>
+<script src="http://jquery-websocket.googlecode.com/files/jquery.websocket-0.0.1.js"></script>
+<script src="../js/comet.js?1000"></script>
+<script src="../js/agent.js?1000"></script>
+<script>
+var comet = new Comet({"agentHost" : "10.113.195.11",
+							"adminPort" : "8091",
+							"apiPort" : "8090",
+							"key" : "lucas",
+							"heartbeat" : 30,
+							mid : 0,
+							onOpen : function() {
+								$("#content").append("初始化完成<br>")
+							},
+							onOfflineMessage: function(data){
+								$("#content").append(JSON.stringify(data.msg) + "<br>");
+							},
+							onOnlineMessage: function(data){
+								$("#content").append(decodeURIComponent(data.msg) + "<br>");
+							},
+							onError: function(message){
+								$("#content").append(message + "<br>");
+							},
+							onClose: function(message){
+								$("#content").append('连接断开' + "<br>");
+							}
+							});
+comet.start();
+var agent = new Agent({"agentHost" : "10.113.195.11",
+							"adminPort" : "8091",
+							"apiPort" : "8090",
+							"key" : "lucas",
+							onPushSuccess : function() {
+								$("#message").val();
+							},
+							onPushError: function(data){
+								alert(data);
+							}
+							});
+
+$("#close").click(function() {
+	comet.destroy();
+});
+$("#pushBtn").click(function() {
+	agent.push($("#message").val());
+});
+
+</script>
+</body>
+</html>
