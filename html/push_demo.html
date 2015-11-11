@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Web Chat Demo</title>
+<title>Push Demo</title>
 <style type="text/css">
 	#content{
 		width: 500px;
@@ -20,39 +20,46 @@
 	</style>
 </head>
 <body>
-<h3>Web Chat Demo</h3>
+<h3>Push Demo</h3>
 
 <div id="content"></div>
+<input id="close" type="button" value="Disconnect"><br>
+<h5>Push</h5>
 <textarea id="message" autocomplete="off" placeholder="想要说什么" rows="4" cols="80"/>
 </textarea><br>
-<input id="sendBtn" type="button" value="Send">
+<input id="pushBtn" type="button" value="Push">
 
 <script src="../js/class.support/class.support.min.js"></script>
 <script src="../js/jquery/jquery.min.js"></script>
 <script src="http://www.google.com/jsapi"></script>
 <script src="http://jquery-json.googlecode.com/files/jquery.json-2.2.min.js"></script>
-<script src="../js/chat/comet.js?1000"></script>
-<script src="../js/chat/agent.js?1000"></script>
+<script src="../js/push/comet.js?1000"></script>
+<script src="../js/push/agent.js?1000"></script>
 <script>
-var comet = new Comet({
+var key = "lucas"
+var comet = new Comet({"key" : key,
 							"heartbeat" : 30,
 							mid : 0,
 							onOpen : function() {
-								console.log("Comet connected!!")
+								$("#content").append("Comet connected!!<br>")
+							},
+							onOfflineMessage: function(data){
+								$("#content").append(JSON.stringify(data.msg) + "<br>");
 							},
 							onOnlineMessage: function(data){
 								$("#content").append(decodeURIComponent(data.msg) + "<br>");
 							},
 							onError: function(message){
-								alert(message);
+								$("#content").append(message + "<br>");
 							},
 							onClose: function(message){
-								console.log('Disconnected!!')
+								$("#content").append('Disconnected!!' + "<br>");
 							}
 							});
 var agent = new Agent({"agentHost" : "10.113.195.11",
 							"adminPort" : "8091",
 							"apiPort" : "8090",
+							"key" : key,
 							"expire" : 600,
 							onPushSuccess : function() {
 								$("#message").val();
@@ -63,18 +70,21 @@ var agent = new Agent({"agentHost" : "10.113.195.11",
 							});
 
 // startup
-agent.getCometNode(function(data) {
-	comet.start(data);
+agent.getCometNode(key, function(node) {
+	comet.start(node);
 });
+
+// get offline messages
+agent.getOfflineMessage();
 
 // close event
 $("#close").click(function() {
 	comet.destroy();
 });
 
-// send event
-$("#sendBtn").click(function() {
-	//agent.push($("#message").val());
+// push event
+$("#pushBtn").click(function() {
+	agent.push($("#message").val());
 });
 
 </script>
