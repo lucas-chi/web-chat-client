@@ -1,0 +1,56 @@
+#content{
+	width: 500px;
+	height: 400px;
+	overflow: auto;
+	font-size: 12px;
+	background: #eee;
+	padding: 5px 10px;
+	margin-bottom: 5px;
+	border: 1px solid #888;
+	box-sizing: border-box;
+	font-family: "微软雅黑";
+	word-wrap: break-word;
+}
+
+.user_msg {
+	background-color: rgb(56, 151, 231);
+	border-collapse: collapse;
+	color: rgb(255, 255, 255);
+	font-family: Arial, Verdana, 宋体;
+	font-size: 12px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: normal;
+	vertical-align: middle;
+	word-break: break-all;
+	word-wrap: break-word;
+	padding-bottom: 0px;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-top: 0px;
+	margin-top : 2px;
+	margin-bottom : 2px;
+	float : right;
+}
+
+.robot_msg {
+	background-color: rgb(255, 255, 255);
+	border-collapse: collapse;
+	color: rgb(51, 51, 51);
+	display: table-cell;
+	font-family: Arial, Verdana, 宋体;
+	font-size: 12px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: normal;
+	vertical-align: middle;
+	word-break: break-all;
+	word-wrap: break-word;
+	padding-bottom: 0px;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-top: 0px;
+	margin-top : 2px;
+	margin-bottom : 2px;
+	float : left;
+}
