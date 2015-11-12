@@ -13,6 +13,8 @@ var (
 
 func main() {
 	flag.StringVar(&dir, "c", "./", " set file serve dir")
+	flag.Parse()
+	
 	log.Debug("Start to serve dir : %s", dir)
 	
 	// Simple static webserver:
