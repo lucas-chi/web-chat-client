@@ -12,46 +12,13 @@
 			_this._timerOutTimer = null;
 			
 		},
-		start : function() {
-			var _this = this;
-			
-			// websocket
-			_this._getCometNode(1, _this._options.key);
-		},
-		_getCometNode : function(proto, key) {
-			var _this = this;
-			var url = "http://" + _this._options.agentHost + ":" + _this._options.apiPort + "/1/server/get?" + $.param({k : key, p : 1});
-			$.ajax({
-				url: url,
-				type: 'get',
-				jsonp: "cb",
-				dataType: 'jsonp',
-				cache: false,
-				data: {
-        			format: "json"
-    			},
-				jsonpCallback : "comet._cometNodeCallback",
-			})
-		},
-		_cometNodeCallback : function(result) {
-			var _this = this;
-			
-			if (result.ret == 0) {
-				console.log("fetched comet node : " + result.data.server)
-				_this.cometNode = result.data.server
-				_this._initComet(_this.cometNode);
-			} else {
-				_this._options.onError('获取Comet Node失败 : ' + result.ret);
-			}
-		},
-		_initComet : function(cometNode) {
+		start : function(cometNode) {
 			var _this = this;
 			
 			var hp = cometNode.split(":");
 			_this.ws = new WebSocket("ws://" + hp[0] + ":" + hp[1] + "/sub?" + $.param({key : _this._options.key, heartbeat : _this._options.heartbeat}));
 			
 			_this.ws.onopen = function() {
-				_this._getOfflineMessage();
 				_this._runHeartbeatTask();
 				_this._options.onOpen();
 			};
@@ -102,21 +69,10 @@
 			var _this = this;
 			_this.ws.send(data)
 		},
-		_getOfflineMessage : function() {
+		destroy : function() {
 			var _this = this;
 			
-			var url = "http://" + _this._options.agentHost + ":" + _this._options.apiPort + "/1/msg/get?" + $.param({k : _this._options.key, mid : _this._options.mid, m : 0});
-			$.ajax({
-				url: url,
-				type: 'get',
-				jsonp: "cb",
-				dataType: 'jsonp',
-				cache: false,
-				data: {
-        			format: "json"
-    			},
-				jsonpCallback : "comet._offlineMessageCallback",
-			})
+			_this.ws.close();
 		},
 		_offlineMessageCallback : function(result) {
 			var _this = this;
@@ -137,12 +93,6 @@
 			} else {
 				_this._options.onError('获取离线消息失败！');
 			}
-		
-		},
-		destroy : function() {
-			var _this = this;
-			
-			_this.ws.close();
 		}
 	});
 })(jQuery);
