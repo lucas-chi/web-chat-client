@@ -1,24 +1,18 @@
 package main
 
 import (
-	//"log"
-	"net/http"
 	"flag"
-	log "code.google.com/p/log4go"
-	"fmt"
-)
-
-var (
-	dir string
+	"log"
+	"net/http"
 )
 
 func main() {
-	flag.StringVar(&dir, "d", "./", "set file serve dir")
+	port := flag.String("p", "8100", "port to serve on")
+	dir := flag.String("d", ".", "the directory of static file to host")
 	flag.Parse()
-	
-	log.Debug("Start to serve dir : %s", dir)
-	fmt.Println(dir)
-	
-	// Simple static webserver:
-	log.Error(http.ListenAndServe(":9000", http.FileServer(http.Dir(dir))))
+
+	http.Handle("/", http.FileServer(http.Dir(*dir)))
+
+	log.Printf("Serving %s on HTTP port: %s\n", *dir, *port)
+	log.Fatal(http.ListenAndServe(":"+*port, nil))
 }
