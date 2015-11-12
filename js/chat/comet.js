@@ -5,7 +5,7 @@
 			_this._options = $.extend({
 				id: '.container-fluid'
 			}, options);
-			console.log('initialize comet client...');
+			console.log('initializing comet module...');
 			console.log(_this._options);
 			
 			_this._heartbeatTimer = null;
@@ -41,7 +41,7 @@
 			_this.ws.onmessage = function(e){
 				var data = e.data;
 				if(data[0] == '+'){
-					clearTimeout(_this.timerOutTimer);
+					clearTimeout(_this._timerOutTimer);
 					console.log('Debug: 响应心跳');
 				} else if (data[0] == '-'){
 					_this._options.onError('握手协议错误' + data);
@@ -72,9 +72,9 @@
 		_runHeartbeatTask : function() {
 			var _this = this;
 			
-			_this.heartbeatTimer = setInterval(function(){
+			_this._heartbeatTimer = setInterval(function(){
 				_this.send('h');
-				_this.timerOutTimer = setTimeout(function(){
+				_this._timerOutTimer = setTimeout(function(){
 					_this.destroy();
 					_this._options.onError('心跳超时');
 			}, (_this._options.heartbeat + 15) * 1000);

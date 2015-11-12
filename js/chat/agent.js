@@ -5,7 +5,7 @@
 			_this._options = $.extend({
 				id: '.container-fluid'
 			}, options);
-			console.log('initialize agent client...');
+			console.log('initializing agent module...');
 			console.log(_this._options);
 		},
 		push : function(data) {
