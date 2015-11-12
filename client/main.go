@@ -1,11 +1,20 @@
 package main
 
 import (
-	"log"
+	//"log"
 	"net/http"
+	"flag"
+	log "code.google.com/p/log4go"
+)
+
+var (
+	dir string
 )
 
 func main() {
+	flag.StringVar(&dir, "c", "./", " set file serve dir")
+	log.Debug("Start to serve dir : %s", dir)
+	
 	// Simple static webserver:
-	log.Fatal(http.ListenAndServe(":9000", http.FileServer(http.Dir("./"))))
+	log.Error(http.ListenAndServe(":9000", http.FileServer(http.Dir("./"))))
 }
